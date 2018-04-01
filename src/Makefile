@@ -5,12 +5,14 @@
 # == CHANGE THE SETTINGS BELOW TO SUIT YOUR ENVIRONMENT =======================
 
 # Your platform. See PLATS for possible values.
-PLAT= none
+PLAT= switch
 
-CC= gcc
+CROSS = $(DEVKITPRO)/devkitA64/bin/aarch64-none-elf-
+
+CC= $(CROSS)gcc
 CFLAGS= -O2 -Wall $(MYCFLAGS)
-AR= ar rcu
-RANLIB= ranlib
+AR= $(CROSS)ar rcu
+RANLIB= $(CROSS)ranlib
 RM= rm -f
 LIBS= -lm $(MYLIBS)
 
@@ -20,7 +22,7 @@ MYLIBS=
 
 # == END OF USER SETTINGS. NO NEED TO CHANGE ANYTHING BELOW THIS LINE =========
 
-PLATS= aix ansi bsd freebsd generic linux macosx mingw posix solaris
+PLATS= aix ansi bsd freebsd generic linux macosx mingw posix solaris switch
 
 LUA_A=	liblua.a
 CORE_O=	lapi.o lcode.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o lmem.o \
@@ -114,6 +116,11 @@ posix:
 
 solaris:
 	$(MAKE) all MYCFLAGS="-DLUA_USE_POSIX -DLUA_USE_DLOPEN" MYLIBS="-ldl"
+
+switch:
+	$(MAKE) all MYCFLAGS="-D__SWITCH__ -I${DEVKITPRO}/libnx/include \
+	  -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIC -ffunction-sections" \
+	  MYLIBS="-L${DEVKITPRO}/libnx/lib -lnx"
 
 # list targets that do not create files (but not all makes understand .PHONY)
 .PHONY: all $(PLATS) default o a clean depend echo none
